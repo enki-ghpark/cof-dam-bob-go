@@ -1,11 +1,16 @@
 import { GoogleGenAI, Type } from "@google/genai";
 
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const apiKey = import.meta.env.VITE_GEMINI_API_KEY || '';
+const ai = apiKey ? new GoogleGenAI({ apiKey }) : null;
 
 export const getMenuRecommendation = async (
   context: string, 
   weather?: string
 ): Promise<string[]> => {
+  if (!ai) {
+    console.warn("Gemini API key is missing. Using fallback menu.");
+    return ["김치찌개", "샌드위치", "라멘"];
+  }
   try {
     const prompt = `
       한국 직장인들을 위한 점심 메뉴 5개를 추천해줘.
